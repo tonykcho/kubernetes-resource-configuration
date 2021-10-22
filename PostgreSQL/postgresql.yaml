@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresql-deployment
+spec:
+  selector:
+    matchLabels:
+      app: postgresql-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgresql-deployment
+    spec:
+      containers:
+      - name: postgresql-deployment
+        image: postgresql:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_PASSWORD
+          value: root_admin
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: postgresql-volume
+      volumes:
+      - name: postgresql-volume
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-cluster
+spec:
+  type: ClusterIP
+  selector:
+    app: postgresql-deployment
+  ports:
+  - port: 5432
+    targetPort: 5432
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql-loadbalancer
+spec:
+  type: LoadBalancer
+  selector:
+    app: postgresql-deployment
+  ports:
+  - port: 5432
+    targetPort: 5432
