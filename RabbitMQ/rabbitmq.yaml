@@ -87,7 +87,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: rabbitmq-svc
+            name: rabbitmq-cluster
             port:
               number: 15672
 
