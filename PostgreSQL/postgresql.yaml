@@ -14,11 +14,11 @@ spec:
     spec:
       containers:
       - name: postgresql-deployment
-        image: postgresql:latest
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
+        image: postgres:latest
+        # resources:
+        #   limits:
+        #     memory: "128Mi"
+        #     cpu: "500m"
         ports:
         - containerPort: 5432
         env:
