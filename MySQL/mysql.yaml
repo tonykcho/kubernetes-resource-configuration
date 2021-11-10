@@ -38,14 +38,14 @@ spec:
     - port: 3306
       targetPort: 3306
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mysql-loadbalancer
-spec:
-  selector:
-    app: mysql-deployment
-  ports:
-    - port: 3306
-      targetPort: 3306
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: mysql-loadbalancer
+# spec:
+#   selector:
+#     app: mysql-deployment
+#   ports:
+#     - port: 3306
+#       targetPort: 3306
