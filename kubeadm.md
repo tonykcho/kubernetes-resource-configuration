@@ -96,3 +96,33 @@ sudo apt-get install helm
 helm repo add cilium https://helm.cilium.io/
 helm install cilium cilium/cilium --version 1.11.0 --namespace kube-system
 ```
+
+# Common Used Command List
+
+Untainted master
+
+```
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+
+Create join token
+```
+kubeadm token create --print-join-command
+```
+
+Auto scale deployment
+```
+kubectl autoscale deployment ${deployment_name} --min=${minCount} --max={maxCount}
+```
+
+Scale deployment
+```
+kubectl scale deployments/${deployment_name} --replicas=${count}
+```
+
+Port forward to Pod (Important)
+```
+kubectl port-forward ${port_name} ${host_port}:${pod_port}
+
+kubectl port-forward deployment/${deployment_name} ${host_port}:${pod_port}
+```
