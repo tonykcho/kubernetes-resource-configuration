@@ -5,14 +5,14 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: nginx-deployment
+      app: nginx-app
   template:
     metadata:
       labels:
-        app: nginx-deployment
+        app: nginx-app
     spec:
       containers:
-      - name: nginx-deployment
+      - name: nginx-app
         image: nginx:latest
         ports:
         - containerPort: 80
@@ -25,7 +25,7 @@ metadata:
   name: nginx-cluster
 spec:
   selector:
-    app: nginx-deployment
+    app: nginx-app
   ports:
   - port: 80
     targetPort: 80
