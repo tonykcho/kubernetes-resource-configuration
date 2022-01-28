@@ -5,7 +5,7 @@ metadata:
 spec:
   volumeMode: Filesystem
   capacity:
-    storage: 2Gi
+    storage: 10Gi
   accessModes:
     - ReadWriteOnce
   storageClassName: "elastic-search"
@@ -22,7 +22,7 @@ spec:
   storageClassName: "elastic-search"
   resources:
     requests:
-      storage: 2Gi
+      storage: 10Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
