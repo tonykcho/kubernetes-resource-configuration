@@ -1,0 +1,183 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: elastic-search-pv-01
+spec:
+  volumeMode: Filesystem
+  capacity:
+    storage: 5Gi
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: "elastic-search-pv-01"
+  hostPath:
+    path: "/Users/tony/Desktop/PersistentVolume/elastic-search-cluster/01"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: elastic-search-pv-02
+spec:
+  volumeMode: Filesystem
+  capacity:
+    storage: 5Gi
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: "elastic-search-pv-02"
+  hostPath:
+    path: "/Users/tony/Desktop/PersistentVolume/elastic-search-cluster/02"
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elastic-search-pvc-01
+spec:
+  storageClassName: "elastic-search-pv-01"
+  resources:
+    requests:
+      storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elastic-search-pvc-02
+spec:
+  storageClassName: "elastic-search-pv-02"
+  resources:
+    requests:
+      storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastic-search-deployment-01
+spec:
+  selector:
+    matchLabels:
+      app: elastic-search-node-01
+  template:
+    metadata:
+      labels:
+        app: elastic-search-node-01
+    spec:
+      containers:
+      - name: elastic-search-node-01
+        image: elasticsearch:7.16.3
+        env:
+        - name: node.name
+          value: elastic-search-node-01
+        - name: cluster.name
+          value: es-cluster
+        - name: discovery.seed_hosts
+          value: elastic-search-node-02
+        - name: cluster.initial_master_nodes
+          value: elastic-search-node-01,elastic-search-node-02
+        - name: ES_JAVA_OPTS
+          value: -Xms512m -Xmx512m
+        ports:
+        - containerPort: 9200
+          name: rest
+        - containerPort: 9300
+          name: node
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: elastic-search-volume
+      volumes:
+      - name: elastic-search-volume
+        persistentVolumeClaim:
+          claimName: elastic-search-pvc-01
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elastic-search-deployment-02
+spec:
+  selector:
+    matchLabels:
+      app: elastic-search-node-02
+  template:
+    metadata:
+      labels:
+        app: elastic-search-node-02
+    spec:
+      containers:
+      - name: elastic-search-node-02
+        image: elasticsearch:7.16.3
+        env:
+        - name: node.name
+          value: elastic-search-node-02
+        - name: cluster.name
+          value: es-cluster
+        - name: discovery.seed_hosts
+          value: elastic-search-node-01
+        - name: cluster.initial_master_nodes
+          value: elastic-search-node-01,elastic-search-node-02
+        - name: ES_JAVA_OPTS
+          value: -Xms512m -Xmx512m
+        ports:
+        - containerPort: 9200
+          name: rest
+        - containerPort: 9300
+          name: node
+        volumeMounts:
+        - mountPath: /usr/share/elasticsearch/data
+          name: elastic-search-volume
+      volumes:
+      - name: elastic-search-volume
+        persistentVolumeClaim:
+          claimName: elastic-search-pvc-02
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastic-search-node-01
+spec:
+  type: ClusterIP
+  selector:
+    app: elastic-search-node-01
+  ports:
+  - port: 9200
+    targetPort: 9200
+    protocol: TCP
+    name: rest
+  - port: 9300
+    targetPort: 9300
+    protocol: TCP
+    name: node
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: elastic-search-node-02
+spec:
+  type: ClusterIP
+  selector:
+    app: elastic-search-node-02
+  ports:
+  - port: 9200
+    targetPort: 9200
+    protocol: TCP
+    name: rest
+  - port: 9300
+    targetPort: 9300
+    protocol: TCP
+    name: node
